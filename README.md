@@ -46,21 +46,23 @@ Y = np.array([7,7,8,9,9,10,10,11,11,12], dtype=np.float64)
 
 ```python
 # Scatter plot
-
+plt.scatter(X, Y)
 ```
 
 
-![png](index_files/index_6_0.png)
+
+
+    <matplotlib.collections.PathCollection at 0x7fb2e82af278>
 
 
 
-```python
-# Your observations about relationship in X and Y 
+
+![png](index_files/index_6_1.png)
 
 
+#### Your observations about relationship in X and Y 
 
-#
-```
+The data looks fairly linearly correlated.
 
 In a data analysis context, we can think of these points as two vectors:
 
@@ -76,13 +78,24 @@ Write a function `calc_clope()` that takes in x and y vectors and calculates the
 # Write the function to calculate slope as: 
 # (mean(x) * mean(y) – mean(x*y)) / ( mean (x)^2 – mean( x^2))
 def calc_slope(xs,ys):
-    
-    pass
+    xy_s = xs * ys
+    x_sq = xs ** 2
+    nominator = (xs.mean() * ys.mean()) - xy_s.mean()
+    denominator = (xs.mean() ** 2) - x_sq.mean()
+    slope = nominator / denominator
+    return slope
 
 calc_slope(X,Y)
 
 # 0.5393518518518512
 ```
+
+
+
+
+    0.5393518518518512
+
+
 
 Great, so we have our slope. Next we calculate the intercept. 
 
@@ -99,16 +112,24 @@ Write a function `best_fit()` that takes in X and Y, calculates the slope using 
 # use the slope function with intercept formula to return calculate slop and intercept from data points
 
 def best_fit(xs,ys):
-    
-    pass
+    m = calc_slope(xs, ys)
+    b = ys.mean() - m * xs.mean()
+    return m, b
 
 # Uncomment below to test your function
 
-#m, b = best_fit(X,Y)
-# m,b
+m, b = best_fit(X,Y)
+m, b
 
 # (0.5393518518518512, 6.379629629629633)
 ```
+
+
+
+
+    (0.5393518518518512, 6.379629629629633)
+
+
 
 We now have a working model with `m` and `b` as model parameters. We can create a line for the data points using the calculated slope and intercept:
 
@@ -121,14 +142,39 @@ Write a function `reg_line()` that takes in slope, intercept and X vector and ca
 
 ```python
 def reg_line (m, b, xs):
-    
-    pass
+    return m * xs + b
 
 # Uncomment below
-#regression_line = reg_line(m,b,X)
+regression_line = reg_line(m,b,X)
+regression_line
 ```
 
+
+
+
+    array([ 6.91898148,  7.45833333,  7.99768519,  8.53703704,  9.07638889,
+            9.61574074, 10.69444444, 10.69444444, 11.2337963 , 11.77314815])
+
+
+
 ## Plot the (x,y) data points and draw the calculated regression line for visual inspection
+
+
+```python
+plt.plot(X, regression_line)
+plt.scatter(X, Y, c='blue')
+```
+
+
+
+
+    <matplotlib.collections.PathCollection at 0x7fb318767358>
+
+
+
+
+![png](index_files/index_16_1.png)
+
 
 
 ```python
@@ -136,20 +182,17 @@ def reg_line (m, b, xs):
 ```
 
 
-![png](index_files/index_16_0.png)
+![png](index_files/index_17_0.png)
 
 
 So there we have it, our least squares regression line. This is the best fit line and does describe the data pretty well (still not perfect though). 
 
 ## Describe your Model Mathematically and in words
 
-
-```python
-# Your answer here
-
+### Your answer here
+The best fit line is the line which minimizes the least squares variance - meaning that when you add up the distance from the dots to this line, it is the line has the shortest "distance" for the sum of all the distances. 
 
 
-```
 
 ## Predicting label for new data
 
@@ -163,13 +206,38 @@ Let's try to find a y prediction for a new value of x = 7 and unknown y, and plo
 
 ```python
 x_new = 7
-y_predicted = None
+y_predicted = reg_line(m,b,x_new)
 y_predicted
 
 # 10.155092592592592
 ```
 
+
+
+
+    10.155092592592592
+
+
+
 ## Plot the prediction with actual data and regression line 
+
+
+```python
+plt.plot(X, regression_line)
+plt.scatter(X, Y, c='blue')
+plt.scatter(x_new, y_predicted)
+```
+
+
+
+
+    <matplotlib.collections.PathCollection at 0x7fb2e84ef978>
+
+
+
+
+![png](index_files/index_23_1.png)
+
 
 
 ```python
@@ -178,7 +246,7 @@ y_predicted
 ```
 
 
-![png](index_files/index_22_0.png)
+![png](index_files/index_24_0.png)
 
 
 We now know how to create our own models, which is great, but we're stilling missing something integral: how accurate is our model? This is the topic for discussion in the next lab.
